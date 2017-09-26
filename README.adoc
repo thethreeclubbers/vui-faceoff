@@ -1,0 +1,32 @@
+= The Big Java VUI Face Off
+Viktor Gamov <viktor.gamov@gmail.com>, Baruch Sadogursky <TBD>, Leonid Igolnik <TBD>
+2017-09-25
+:revdate: 2017-09-25 21:56:01 -0600
+:linkattrs:
+:ast: &ast;
+:y: &#10003;
+:n: &#10008;
+:y: icon:check-sign[role="green"]
+:n: icon:check-minus[role="red"]
+:c: icon:file-text-alt[role="blue"]
+:toc: auto
+:toc-placement: auto
+:toc-position: right
+:toc-title: Table of content
+:toclevels: 3
+:idprefix:
+:idseparator: -
+:sectanchors:
+:icons: font
+:source-highlighter: highlight.js
+:highlightjs-theme: idea
+:experimental:
+
+Preamble of a document
+
+toc::[]
+
+== Abstract
+
+This session compares and contrasts the experience of implementing a voice user interface for the two market leader voice-activated assistants. Both are extendable, and both have Java APIs, but which is better?
+
