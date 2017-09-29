@@ -30,3 +30,26 @@ toc::[]
 
 This session compares and contrasts the experience of implementing a voice user interface for the two market leader voice-activated assistants. Both are extendable, and both have Java APIs, but which is better?
 
+== Sample utterances
+
+=== Status Update
+----
+JIRA get status update on project ${PROJ}
+JIRA what is status of ${PROJ}
+JIRA get trend of ${PROJ}
+----
+
+=== Critical Issues
+----
+JIRA get number of critical issues
+JIRA get assignie for ${ISSUE}
+----
+
+=== Change status of Issue
+
+----
+JIRA block ${ISSUE}
+----
+
+
+
