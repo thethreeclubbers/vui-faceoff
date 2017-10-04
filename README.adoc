@@ -39,6 +39,14 @@ JIRA what is status of ${PROJ}
 JIRA get trend of ${PROJ}
 ----
 
+==== Conversations (U - user, A - assistant (Alexa, Google Assistant)
+
+.status update
+----
+U: $A, get me status of the project
+A: There are N open issues, 3 are critical
+----
+
 === Critical Issues
 ----
 JIRA get number of critical issues
