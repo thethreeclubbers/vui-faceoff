@@ -60,4 +60,11 @@ JIRA block ${ISSUE}
 ----
 
 
+== Preso script
+
+Ask alexa and google assistant about competitors 
+
+Alexa: Simon says «Hello dear conference attendees»
+Ok Google: Repeat after me
+
 

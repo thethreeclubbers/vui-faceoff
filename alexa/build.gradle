@@ -1,8 +1,47 @@
-apply plugin: 'java'
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    dependencies {
+        classpath 'com.github.skhatri:gradle-s3-plugin:1.0.4'
+    }
+    repositories {
+        jcenter()
+    }
+}
+apply plugin: 's3'
+
+s3 {
+    bucket = 'vuifaceoff-bucket'
+    awsProfile = 'default'
+    upload {
+        //"key" is the name of the target file in S3 (in this example we create a versioned file)
+        key = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()) +
+              '/alexa-vui-faceoff.zip'
+
+        // "file" is the name of the local source file
+        file = './build/distributions/alexa-vui-faceoff.zip'
+
+        //"link" will create http redirect to the latest uploaded version of the file
+        // This will redirect is only available via the "s3 static webpage" option.
+        // walkthorugh link from AWS on how to set it up
+        // https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html
+        //link = 'latest/gradle-plugin.jar'
+    }
+    /*download {
+        key = 'latest/gradle-plugin.jar'
+        saveTo = 'gradle-pugin.jar'
+    }*/
+}
+
+//apply plugin: 'java'
 apply plugin: 'groovy'
 
 repositories {
     jcenter()
+    maven{
+        url = 'https://m2proxy.atlassian.com/repository/public'
+    }
 }
 
 dependencies {
@@ -22,11 +61,11 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
 
     // doest
-    compile 'com.atlassian.jira:jira-rest-java-client:4.0.0'
+    compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
 }
 
 task buildZip(type: Zip) {
-    from compileJava
+    from compileGroovy
     from processResources
     into('lib') {
         from configurations.runtime
