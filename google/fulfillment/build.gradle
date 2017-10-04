@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'war'
-apply plugin: 'appengine'
+apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'com.google.cloud.tools.appengine'
 
 buildscript {
     repositories {
@@ -8,7 +9,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.56'
+        classpath 'com.google.cloud.tools:appengine-gradle-plugin:+'
+        classpath 'org.akhikhl.gretty:gretty:+'
     }
 }
 
@@ -17,7 +19,42 @@ repositories {
 }
 
 dependencies {
-    providedCompile 'javax.servlet:servlet-api:2.5'
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    providedCompile 'com.google.appengine:appengine:+'
     compile localGroovy()
+    compile 'io.github.http-builder-ng:http-builder-ng-okhttp:1.0.0'
     compile 'log4j:log4j:1.2.17'
 }
+
+gretty {
+    httpPort = 8080
+    contextPath = '/'
+    servletContainer = 'jetty9'  // What App Engine Flexible uses
+}
+
+appengine {
+
+    deploy {   // deploy configuration
+        stopPreviousVersion = true  // default - stop the current version
+        promote = true              // default - & make this the current version
+    }
+}
+
+gretty {
+    httpPort = 8080
+    contextPath = '/'
+    servletContainer = 'jetty9'  // What App Engine Flexible uses
+}
+
+appengine {
+
+    deploy {   // deploy configuration
+        stopPreviousVersion = true  // default - stop the current version
+        promote = true              // default - & make this the current version
+    }
+
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
