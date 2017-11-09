@@ -18,6 +18,8 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 @CompileStatic
 @Slf4j(loggingStrategy = Log4j2.Log4j2LoggingStrategy, category = 'StandupHelperSpeechlet')
 class StandupHelperSpeechlet implements Speechlet {
+    
+    private String eventName = 'Devoxx'
 
     void onSessionStarted(SessionStartedRequest request, Session session)
             throws SpeechletException {
@@ -30,11 +32,11 @@ class StandupHelperSpeechlet implements Speechlet {
         log.info "onLaunch requestId=$request.requestId, sessionId=$session.sessionId"
         def helloResponses = [
                 "Hello world, I am alexa your humble servant, Amazon Alexa will win this fight !!!",
-                "Hello Joker people, I am your humble stand up helper ",
-                "This is Sparta!!!! Oh Wait!!! This is Joker - I will win nevertheless",
+                "Hello ${eventName} people, I am your humble stand up helper ",
+                "This is Sparta!!!! Oh Wait!!! This is ${eventName} - I will win nevertheless",
                 "Hola Amigo!!! I am ready to serve",
                 "Ready to Serve!!!",
-                "Live long and prosper Joker people, we are ready to battle"
+                "Live long and prosper ${eventName} people, we are ready to battle"
         ]
         Collections.shuffle(helloResponses)
         newAskResponse(helloResponses.first() as String,
@@ -45,9 +47,8 @@ class StandupHelperSpeechlet implements Speechlet {
 
     SpeechletResponse onIntent(IntentRequest intentRequest, Session session)
             throws SpeechletException {
-
-
-        println "onIntent requestId=$intentRequest.requestId, sessionId=$session.sessionId intentRquest=${ReflectionToStringBuilder.toString(intentRequest)} " +
+        
+        log.info "onIntent requestId=$intentRequest.requestId, sessionId=$session.sessionId intentRquest=${ReflectionToStringBuilder.toString(intentRequest)} " +
                 "session=${ReflectionToStringBuilder.toString(session)} intent=${ReflectionToStringBuilder.toString(intentRequest.intent)} "
 
         String responseText = 'I didn\'t get this one'
@@ -84,8 +85,8 @@ class StandupHelperSpeechlet implements Speechlet {
     private SpeechletResponse getTopUserDefects(IntentRequest intentRequest, Session session) {
         String responseText
         def name = intentRequest.intent.getSlot("USER").value
-//      println "username is ${name}"
-//      println "dialog state ${intentRequest.dialogState}"
+//      log.info "username is ${name}"
+//      log.info "dialog state ${intentRequest.dialogState}"
 
         if (name == null) {
             return popuplateRequestFields(intentRequest)
@@ -145,7 +146,7 @@ class StandupHelperSpeechlet implements Speechlet {
             dd.setUpdatedIntent(dialogIntent)
             SpeechletResponse speechletResp = new SpeechletResponse()
             speechletResp.directives = [dd] as List<Directive>
-            speechletResp.shouldEndSession = false;
+            speechletResp.nullableShouldEndSession = false
             return speechletResp
         } else {
             def result = new SsmlOutputSpeech()
@@ -184,7 +185,7 @@ class StandupHelperSpeechlet implements Speechlet {
     }
 
     void onSessionEnded(SessionEndedRequest request, Session session) throws SpeechletException {
-        println "onSessionEnded requestId=${request.getRequestId()}, sessionId=${session.getSessionId()}"
+        log.info "onSessionEnded requestId=${request.getRequestId()}, sessionId=${session.getSessionId()}"
     }
 
     static SpeechletResponse newAskResponse(String outputSpeechText, String repromptText) {
