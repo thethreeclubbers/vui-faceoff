@@ -69,7 +69,7 @@ class StandupHelperSpeechlet implements Speechlet {
             case 'SeverityForDefect':
                 return getSeverityForDefect(intentRequest, session)
             case 'BlockCurrentDefect':
-                return blockDefect(session)
+                return blockDefect(intentRequest, session)
             case 'Knockout':
                 return executeKO(intentRequest)
             case 'Goodbye':
@@ -137,12 +137,19 @@ class StandupHelperSpeechlet implements Speechlet {
         }
     }
 
-    private SpeechletResponse blockDefect(Session session) {
+    private SpeechletResponse blockDefect(IntentRequest request, Session session) {
         def defect
         defect = session.attributes['current-defect']
-        return newAskResponse(
-                "Defect $defect is a blocker now, go fix it!",
-                "is there anything else?")
+        if (!defect) {
+            defect = request.intent.slots['DEFECT'].value
+        }
+        if (defect) {
+            return newAskResponse(
+                    "Defect $defect is a blocker now, go fix it!",
+                    "is there anything else?")
+        } else {
+            return newAskResponse("What's defect you want me to block?", "I'm waiting")
+        }
     }
 
     private SpeechletResponse executeKO(IntentRequest intentRequest) {
