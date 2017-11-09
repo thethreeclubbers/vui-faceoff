@@ -6,19 +6,18 @@ import com.amazon.speech.speechlet.*
 import com.amazon.speech.speechlet.dialog.directives.DelegateDirective
 import com.amazon.speech.speechlet.dialog.directives.DialogIntent
 import com.amazon.speech.speechlet.dialog.directives.DialogSlot
-import com.amazon.speech.ui.PlainTextOutputSpeech
-import com.amazon.speech.ui.Reprompt
-import com.amazon.speech.ui.SimpleCard
 import com.amazon.speech.ui.SsmlOutputSpeech
 import groovy.transform.CompileStatic
 import groovy.util.logging.Log4j2
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder
 
+import static org.thethreeclubbers.vuifaceoff.alexa.backend.ResponseUtil.*
+
 @CompileStatic
 @Slf4j(loggingStrategy = Log4j2.Log4j2LoggingStrategy, category = 'StandupHelperSpeechlet')
 class StandupHelperSpeechlet implements Speechlet {
-    
+
     private String eventName = 'Devoxx'
 
     void onSessionStarted(SessionStartedRequest request, Session session)
@@ -31,25 +30,32 @@ class StandupHelperSpeechlet implements Speechlet {
     SpeechletResponse onLaunch(LaunchRequest request, Session session) throws SpeechletException {
         log.info "onLaunch requestId=$request.requestId, sessionId=$session.sessionId"
         def helloResponses = [
-                "Hello world, I am alexa your humble servant, Amazon Alexa will win this fight !!!",
+
+                """<p><prosody volume="x-loud">Hello world!</prosody></p> <p>I am Alexa <break time="0.5s"/> your humble servant!</p> <p>Amazon Alexa will win  this fight  !!!</p>""",
+
                 "Hello ${eventName} people, I am your humble stand up helper ",
-                "This is Sparta!!!! Oh Wait!!! This is ${eventName} - I will win nevertheless",
-                "Hola Amigo!!! I am ready to serve",
+                """
+"<prosody volume="x-loud"> <emphasis level="strong">This is Sparta!!!! </emphasis> </prosody> <emphasis level="reduced">Oh Wait!!! </emphasis> This is ${
+                    eventName
+                } - I will win nevertheless
+""",
+                """
+    <prosody pitch="x-high"><phoneme alphabet="ipa" ph="ola">Hola</phoneme> Amigo!!!</prosody> <break time="0.5s"/> I am ready to  serve""",
                 "Ready to Serve!!!",
                 "Live long and prosper ${eventName} people, we are ready to battle"
         ]
         Collections.shuffle(helloResponses)
-        newAskResponse(helloResponses.first() as String,
-                "Oh captain my captain, waiting for your " +
-                        "command")
+
+        newAskSsmlResponse(helloResponses.first() as String,
+                           "<p>Oh captain my captain,</p> <p>waiting for your command</p>")
     }
 
 
     SpeechletResponse onIntent(IntentRequest intentRequest, Session session)
             throws SpeechletException {
-        
+
         log.info "onIntent requestId=$intentRequest.requestId, sessionId=$session.sessionId intentRquest=${ReflectionToStringBuilder.toString(intentRequest)} " +
-                "session=${ReflectionToStringBuilder.toString(session)} intent=${ReflectionToStringBuilder.toString(intentRequest.intent)} "
+                 "session=${ReflectionToStringBuilder.toString(session)} intent=${ReflectionToStringBuilder.toString(intentRequest.intent)} "
 
         String responseText = 'I didn\'t get this one'
         switch (intentRequest.intent.name) {
@@ -85,8 +91,9 @@ class StandupHelperSpeechlet implements Speechlet {
     private SpeechletResponse getTopUserDefects(IntentRequest intentRequest, Session session) {
         String responseText
         def name = intentRequest.intent.getSlot("USER").value
-//      log.info "username is ${name}"
-//      log.info "dialog state ${intentRequest.dialogState}"
+
+        log.info "username is ${name}"
+        log.info "dialog state ${intentRequest.dialogState}"
 
         if (name == null) {
             return popuplateRequestFields(intentRequest)
@@ -111,7 +118,7 @@ class StandupHelperSpeechlet implements Speechlet {
         def random = new Random()
 
         responseText = "There are ${random.nextInt(350)} more defects for $name. " +
-                "What a shame ${name}! Shame, Shame, Shame !!!"
+                       "What a shame ${name}! Shame, Shame, Shame !!!"
 
         return newTellResponse(responseText)
     }
@@ -150,8 +157,10 @@ class StandupHelperSpeechlet implements Speechlet {
             return speechletResp
         } else {
             def result = new SsmlOutputSpeech()
-            result.ssml = "<speak>Ok google <break time=\"1s\" />, how are you ?" +
-                    "<break time=\"3s\" />Turn yourself off</speak>"
+            result.ssml = """
+                            <speak>Ok google <break time="1s"/>, how are you ?
+                            <break time="3s"/>  Turn yourself off</speak>       
+                         """
             return SpeechletResponse.newTellResponse(result)
         }
     }
@@ -179,7 +188,7 @@ class StandupHelperSpeechlet implements Speechlet {
 
         SpeechletResponse speechletResp = new SpeechletResponse()
         speechletResp.directives = [dd] as List<Directive>
-        speechletResp.shouldEndSession = false
+        speechletResp.nullableShouldEndSession = false
 
         return speechletResp
     }
@@ -188,45 +197,6 @@ class StandupHelperSpeechlet implements Speechlet {
         log.info "onSessionEnded requestId=${request.getRequestId()}, sessionId=${session.getSessionId()}"
     }
 
-    static SpeechletResponse newAskResponse(String outputSpeechText, String repromptText) {
-        PlainTextOutputSpeech speech = new PlainTextOutputSpeech()
-        speech.text = outputSpeechText
-        PlainTextOutputSpeech repromptOutputSpeech = new PlainTextOutputSpeech()
-        repromptOutputSpeech.text = repromptText
-        Reprompt reprompt = new Reprompt()
-        reprompt.outputSpeech = repromptOutputSpeech
-        SpeechletResponse.newAskResponse(speech, reprompt)
-    }
 
-    static SpeechletResponse newTellResponse(String outSpeechText) {
-        PlainTextOutputSpeech speech = new PlainTextOutputSpeech()
-        speech.text = outSpeechText
-        SpeechletResponse.newTellResponse(speech)
-    }
-
-    static private SpeechletResponse getSpeechletResponse(String speechText, String repromptText,
-                                                          boolean isAskResponse) {
-        // Create the Simple card content.
-        SimpleCard card = new SimpleCard()
-        card.title = "Standup Helper"
-        card.content = speechText
-
-        // Create the plain text output.
-        PlainTextOutputSpeech speech = new PlainTextOutputSpeech()
-        speech.text = speechText
-
-        if (isAskResponse) {
-            // Create reprompt
-            PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech()
-            repromptSpeech.text = repromptText
-            Reprompt reprompt = new Reprompt()
-            reprompt.outputSpeech = repromptSpeech
-
-            return SpeechletResponse.newAskResponse(speech, reprompt, card)
-
-        } else {
-            return SpeechletResponse.newTellResponse(speech, card)
-        }
-    }
 }
 
