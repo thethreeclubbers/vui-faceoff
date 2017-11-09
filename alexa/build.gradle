@@ -53,12 +53,14 @@ dependencies {
             'io.github.http-builder-ng:http-builder-ng-okhttp:0.14.1',
             'com.amazonaws:aws-lambda-java-core:1.1.0',
             'com.amazonaws:aws-lambda-java-events:1.1.0',
-            'com.amazon.alexa:alexa-skills-kit:1.1.2',
+            'com.amazon.alexa:alexa-skills-kit:1.6.0',
+            'com.amazonaws:aws-lambda-java-log4j2:1.0.0',
             'log4j:log4j:1.2.17',
             'commons-io:commons-io:2.5',
-            'org.apache.commons:commons-lang3:3.5'
+            'org.apache.commons:commons-lang3:3.5',
+            'org.slf4j:slf4j-api:1.7.25',
+            'org.mod4j.org.apache.commons:lang:2.1.0'
     )
-    compile 'org.slf4j:slf4j-api:1.7.25'
 
     // doest
     compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
@@ -71,5 +73,6 @@ task buildZip(type: Zip) {
         from configurations.runtime
     }
 }
+
 
 build.dependsOn buildZip
