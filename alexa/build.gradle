@@ -1,6 +1,3 @@
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 buildscript {
     dependencies {
         classpath 'com.github.skhatri:gradle-s3-plugin:1.0.4'
@@ -16,8 +13,9 @@ s3 {
     awsProfile = 'default'
     upload {
         //"key" is the name of the target file in S3 (in this example we create a versioned file)
-        key = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()) +
-              '/alexa-vui-faceoff.zip'
+        //key = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDate.now()) +
+        // '/alexa-vui-faceoff.zip'
+        key = 'alexa-vui-faceoff.zip'
 
         // "file" is the name of the local source file
         file = './build/distributions/alexa-vui-faceoff.zip'
@@ -39,13 +37,14 @@ apply plugin: 'groovy'
 
 repositories {
     jcenter()
-    maven{
+    maven {
         url = 'https://m2proxy.atlassian.com/repository/public'
     }
 }
 
 dependencies {
 
+    // doest
     compile(
             'org.codehaus.groovy:groovy:2.4.10',
             'org.codehaus.groovy:groovy-xml:2.4.10',
@@ -53,17 +52,19 @@ dependencies {
             'io.github.http-builder-ng:http-builder-ng-okhttp:0.14.1',
             'com.amazonaws:aws-lambda-java-core:1.1.0',
             'com.amazonaws:aws-lambda-java-events:1.1.0',
-            'com.amazon.alexa:alexa-skills-kit:1.6.0',
+            // Logging
             'com.amazonaws:aws-lambda-java-log4j2:1.0.0',
-            'log4j:log4j:1.2.17',
+            'org.apache.logging.log4j:log4j-slf4j-impl:2.9.1',
+            'org.slf4j:slf4j-api:1.7.25',
+            // End logging
             'commons-io:commons-io:2.5',
             'org.apache.commons:commons-lang3:3.5',
-            'org.slf4j:slf4j-api:1.7.25',
             'org.mod4j.org.apache.commons:lang:2.1.0'
     )
-
-    // doest
     compile 'com.atlassian.jira:jira-rest-java-client:2.0.0-m2'
+    compile('com.amazon.alexa:alexa-skills-kit:1.6.0') {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
 }
 
 task buildZip(type: Zip) {
